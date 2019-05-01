@@ -1,8 +1,9 @@
-FROM alpine:3.9
+FROM ubuntu:19.04
 MAINTAINER James Turk <jpturk@princeton.edu>
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
         postgresql-client \
-         && \
-    apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        aws-cli
+        jq \
+        awscli
+WORKDIR /scripts/
+ADD . .
