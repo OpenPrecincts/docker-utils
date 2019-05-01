@@ -7,5 +7,6 @@ export S3_BUCKET=openprecincts-internal
 export PGUSER=openprecincts_production
 
 pg_dump -Fc openprecincts_production > backup.pgdump
-aws s3 cp backup.pgdump s3://${S3_BUCKET}/production-backups/`date +%Y/%m/%Y%m%d`-openprecincts_production.pgdump
+aws s3 cp backup.pgdump s3://${S3_BUCKET}/backups/`date +%Y/%m/%Y%m%d`-openprecincts_production.pgdump
+aws s3 cp backup.pgdump s3://${S3_BUCKET}/backups/latest/openprecincts_production.pgdump
 rm backup.pgdump
