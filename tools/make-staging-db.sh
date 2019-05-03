@@ -6,7 +6,9 @@ export PGHOST=$(aws ssm get-parameter --name /op/production/DB_HOST --with-dec |
 export S3_BUCKET=openprecincts-internal
 export PGUSER=openprecincts_staging
 
-psql -c "DROP DATABASE tmpdb;"
+echo "running make-staging-db.5"
+
+psql -c "DROP DATABASE IF EXISTS tmpdb;"
 createdb tmpdb;
 aws s3 cp s3://${S3_BUCKET}/backups/latest/openprecincts_production.pgdump backup.pgdump 
 pg_restore backup.pgdump -d tmpdb;
