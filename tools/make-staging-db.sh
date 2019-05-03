@@ -1,17 +1,17 @@
 #!/bin/sh
 set -e 
 
-export PGPASSWORD=$(aws ssm get-parameter --name /op/staging/DB_PASSWORD --with-dec | jq -r .Parameter.Value)
+export PGPASSWORD=$(aws ssm get-parameter --name /op/MASTER_DB_PASSWORD --with-dec | jq -r .Parameter.Value)
 export PGHOST=$(aws ssm get-parameter --name /op/production/DB_HOST --with-dec | jq -r .Parameter.Value)
 export S3_BUCKET=openprecincts-internal
-export PGUSER=openprecincts_staging
+export PGUSER=openprecincts_dbadmin
 
-echo "running make-staging-db.5"
+echo "running make-staging-db.7"
 
-psql -c "DROP DATABASE IF EXISTS tmpdb;"
+psql openprecincts_staging -c "DROP DATABASE IF EXISTS tmpdb;"
 createdb tmpdb;
 aws s3 cp s3://${S3_BUCKET}/backups/latest/openprecincts_production.pgdump backup.pgdump 
-pg_restore backup.pgdump -d tmpdb;
+pg_restore backup.pgdump --no-owner -d tmpdb;
 
 psql tmpdb -c "UPDATE auth_user set first_name='', last_name='', password='!', email='', last_login=null,  username=md5(username);"
 psql tmpdb -c "UPDATE files_file set s3_path=concat('test/', s3_path);"
